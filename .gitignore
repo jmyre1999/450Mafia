@@ -1,0 +1,6 @@
+local.bat
+*.pyc
+debug.log
+latest.dump
+db.sqlite3
+static/*
