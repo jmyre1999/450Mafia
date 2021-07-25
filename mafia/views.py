@@ -8,8 +8,8 @@ from wsgiref.util import FileWrapper
 from io import StringIO
 from django.core.files.storage import default_storage
 import os
-from 450mafia.utils import *
-from 450mafia import *
+from mafia.utils import *
+from mafia import *
 from django_ajax.decorators import ajax
 from django.core.mail import send_mail
 from django.conf import settings

@@ -1,1 +1,1 @@
-web: gunicorn 450mafia.wsgi
+web: gunicorn mafia.wsgi
