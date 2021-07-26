@@ -35,6 +35,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 	email = models.EmailField(max_length=75, db_index=True, unique=True)
 	first_name = models.CharField(max_length=25, blank=True)
 	last_name = models.CharField(max_length=25, blank=True)
+	nickname = models.CharField(max_length=25, blank=True)
 	image = models.ImageField(upload_to='userprofile', null=True, blank=True, max_length=500)
 	is_active = models.BooleanField(default=True)
 
@@ -44,14 +45,27 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 
 	# When converting to string, return user's email
 	def __str__(self):
-		return self.email
+		return self.nickname
 
 	def get_full_name(self):
 		return self.first_name + ' ' + self.last_name
 
-	def get_display_name(self):
-		if self.first_name != '' and self.last_name != '':
-			return get_full_name()
-		else:
-			return str(email)
+TEAM_CHOICES = (
+	('M', 'Mafia'),
+	('T', 'Town'),
+)
 
+class Game(models.Model):
+	timestamp = models.DateTimeField(auto_now_add=True)
+	end_time = models.DateTimeField()
+	winner = models.CharField(max_length=1, choices=TEAM_CHOICES)
+
+class GameParticipation(models.Model):
+	user = models.ForeignKey('UserProfile', on_delete=models.CASCADE)
+	game = models.ForeignKey('Game', on_delete=models.CASCADE)
+	role = models.ForeignKey('Role', on_delete=models.CASCADE)
+
+class Role(models.Model):
+	name = models.CharField(max_length=25)
+	description = models.CharField(max_length=100)
+	team = models.CharField(max_length=1, choices=TEAM_CHOICES)
