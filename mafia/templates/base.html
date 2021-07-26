@@ -1,0 +1,226 @@
+<!-- 
+Base template that all templates will extend
+This is where global styling will be called
+ -->
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport for mobile devices -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- Tab header -->
+    <title>FIT Accreditation Portal</title>
+</head>
+
+
+
+{% block css %}
+	<!-- General Styling -->
+	<!-- Tab icon -->
+	<link rel="shortcut icon" href="{% static 'img/favicon.png' %}">
+	<!-- Bootstrap Styling -->
+	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock css %}
+
+{% block scripts %}
+	<!-- Popper source (test) -->
+	<script src="{% static 'js/popper.min.js' %}"></script>
+	<!-- jQuery source required for bootstrap -->
+	<script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+	<!-- Bootstrap source -->
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<!-- Font Awesome -->
+	<script src="{% static 'js/all.min.js' %}"></script>
+	<!-- jQuery Ajax -->
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> -->
+	<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
+{% endblock scripts %}
+
+{% block header %}
+	<!-- Navigation Bar -->
+	<header style="position: fixed; z-index: 1001; width: 100%;">
+		<nav class="navbar navbar-expand-md navbar-dark bg-white">
+		    <div class="container">
+		        <!-- Logo leading back to home page -->
+		        <a href ="/" class="navbar-brand"><img src="{% static 'img/logo.jpg' %}"></a>
+		        <!-- Navbar contents + mobile view dropdown -->
+		        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarItems">
+		            <span class="navbar-toggler-icon"></span>
+		        </button>
+		        <!-- Navbar links -->
+		        <div class="collapse navbar-collapse" id="navbarItems">
+		            <ul class="navbar-nav ml-auto">
+		                <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+		                <li class="nav-item"><a href="#contactus" class="nav-link">Contact</a></li>
+		                {% if not request.user.is_authenticated %}
+		                	<li class="nav-item"><a href="/login/" class="nav-link">Login</a></li>
+		                	<li class="nav-item"><a href="/register/" class="nav-link">Register</a></li>
+		                {% else %}
+		                	{% if request.user.role == 'FA' %}
+								<li class="nav-item"><a href="/submission/" class="nav-link">Submit</a></li>
+		                		<li class="nav-item"><a href="/dashboard/" class="nav-link">Progress</a></li>
+							{% elif request.user.role == 'RE' %}
+		                		<li class="nav-item"><a href="/reviewer_dashboard/" class="nav-link">Review Dashboard</a></li>
+		                	{% elif request.user.role == 'AD'  %}
+								<li class="nav-item"><a href="/submission/" class="nav-link">Submit</a></li>
+								<li class="nav-item"><a href="/dashboard/" class="nav-link">Progress</a></li>
+								<li class="nav-item"><a href="/reviewer_dashboard/" class="nav-link">Review</a></li>
+		                		<li class="nav-item"><a href="/overview/" class="nav-link">Artifacts</a></li>
+		                	{% endif %}
+		                	<li class="nav-item"><a href="#" data-toggle="modal" data-target="#logoutModal" class="nav-link">Logout</a></li>
+		                	<!-- Make account setttings a list item on mobile -->
+		                	{% if "Mobile" in request.META.HTTP_USER_AGENT %}
+		                		<a class="nav-link" href="/account_settings/">Account Settings</a>
+		                	{% endif %}
+		                {% endif %}
+		            </ul>
+		            <!-- Access account settings through user pfp on desktop -->
+            		{% if "Mobile" not in request.META.HTTP_USER_AGENT and request.user.is_authenticated %}
+                		<div class="avatar avatar-xl pl-1">
+                			<a class="nav-link" href="/account_settings/">
+			                    {% if request.user.image %}
+			                        <img src="{{ request.user.image.url }}" class="rounded-circle" style="height:35px; border:1px solid"/>
+			                    {% else %}
+			                        <i class="fa fa-user"></i>
+			                    {% endif %}
+			                </a>
+		                </div>
+		            {% endif %}
+		        </div>
+		        <!-- {% if request.user.is_authenticated %}
+			        <div class="avatar avatar-xl">
+	                    {% if request.user.image %}
+	                        <img src="{{ request.user.image.url }}" class="rounded-circle" />
+	                    {% else %}
+	                        <i class="fa fa-user"></i>
+	                    {% endif %}
+	                </div>
+	             {% endif %} -->
+		    </div>
+		</nav>
+	</header>
+{% endblock header %}
+
+<div style="padding-top: 74px">
+{% block base_body %}{% endblock base_body %}
+</div>
+
+
+
+{% block footer %}
+    <!-- Jumbotron contact -->
+	<div id="contactus" class ="jumbotron py-5 mb-0">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-7 col-lg-8 col-xl-9 my-auto">
+					<h4>Have any questions, comments, or concerns?</h4>
+				</div>
+				<!-- Contact button to bring up modal form -->
+				<div class="col-md-5 col-lg-4 col-xl-3 pt-4 pt-md-0">
+					<a href="#contact" data-toggle="modal" class="btn btn-primary btn-lg">CONTACT US</a>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	
+	<!-- Footer -->
+	<footer>
+		<div class="container">
+			<div class="row text-light text-center py-4 justify-content-center">
+				<div class="col-sm-10 col-md-8 col-lg-6">
+					<a href="https://www.fit.edu/" target="_blank">
+						<img src="{% static 'img/logo-white.png' %}"></div>					
+					</a>
+					<p>Website created to assist Florida Institute of Technology with their ABET accreditation reporting. 
+					   This project is currently being developed by Jason Myre, Joseph Ackerman, Jonathon Uss, and Justyn Diaz 
+					   as their Computer Science senior undergraduate project.
+					</p>
+					<!-- Social media icons -->
+					<ul class="social pt-3">
+						<li><a href="https://www.facebook.com/FloridaInstituteofTechnology" target="_blank"><i class="fab fa-facebook"></i></a></li>
+						<li><a href="https://twitter.com/floridatech" target="_blank"><i class="fab fa-twitter"></i></a></li>
+						<li><a href="https://www.instagram.com/floridatech/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+						<li><a href="https://www.snapchat.com/add/floridatechsnap" target="_blank"><i class="fab fa-snapchat"></i></a></li>
+						<li><a href="https://www.youtube.com/c/FloridaTechOfficial" target="_blank"><i class="fab fa-youtube"></i></a></li>
+						<li><a href="https://www.linkedin.com/edu/school?id=18092&trk=tyah" target="_blank"><i class="fab fa-linkedin"></i></a></li>
+						<li><a href="https://adastra.fit.edu/" target="_blank"><i class="fas fa-star"></i></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<!-- Socket -->
+	<div class="socket text-light text-center py-3">
+		<p>&copy; Florida Institute of Technology</a></p>
+	</div>
+	
+	<!-- Contact Us modal form -->
+	<div class="modal fade" id="contact" role="dialog" style="z-index: 10001;"> 
+		<div class="modal-dialog">
+			<form class="form-horizontal" method="POST">
+				<div class="modal-content">
+					{% csrf_token %}
+					<div class="modal-header">
+						<h4>Contact the team</h4>
+					</div>
+					<div class="modal-body">
+						<!-- Name section of form -->
+						<div class="form-group">
+							<label for="contact-name" class="col-lg-2 control-label">Name:</label>
+							<div class="col-lg-10">
+								<input type="text" name = "name" class="form-control" id="contact-name" placeholder="Full Name">
+							</div>
+						</div>
+						<!-- Email section of form -->
+						<div class="form-group">
+							<label for="contact-email" class="col-lg-2 control-label">Email:</label>
+							<div class="col-lg-10">
+								<input type="email" name = "email" class="form-control" id="contact-email" placeholder="you@example.com">
+							</div>
+						</div>
+						<!-- Text section of form -->
+						<div class="form-group">
+							<label for="contact-message" class="col-lg-2 control-label">Message:</label>
+							<div class="col-lg-10">
+								<textarea class="form-control" name = "subject" rows="8"></textarea>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary" type="submit">Send</button>
+							<a class="btn btn-secondary" data-dismiss="modal">Close</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Logout confirmation modal form. -->
+	<div class="modal" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+				<div class="modal-header">
+					Confirm
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true"> x </span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p> Are you sure you want to logout? <br /></p>
+					<!-- Buttons. -->
+			  		<div class="actionsBtns">
+						<a href="/logout/" class="btn btn-primary">Yes</a>
+						<button class="btn btn-secondary" data-dismiss="modal">No</button>
+			  		</div>
+				</div>
+		  	</div>
+		</div>
+	</div>
+
+{% endblock footer %}
+</html>
